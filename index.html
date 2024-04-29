@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>github_search</title>
+    <style>
+        *{
+    padding: 0;margin: 0;
+    box-sizing: border-box;
+    font-family: "Oswald",sans-serif;
+}
+.main{
+    display: flex;
+    flex-direction: column;
+    gap: 45px;
+    place-items: center;
+   position: absolute;
+   top: 50%;
+   left: 50%;
+   transform: translate(-50%,-50%);
+}
+.box{
+    display: flex;
+   
+    place-content: center;
+    align-items: center;
+    gap:40px;
+}
+input{
+    width: 560px;
+    height: 35px;
+    padding-left: 25px;
+    margin-left: 100px;
+    border: none;
+    border: 3px solid purple;
+    transition: 0.4s;
+}
+
+input:hover{
+    transition: 0.4s;
+    border: 3px solid black;
+
+}
+.profilecard{
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 54px 55px, rgba(0, 0, 0, 0.12) 0px -12px 30px, rgba(0, 0, 0, 0.12) 0px 4px 6px, rgba(0, 0, 0, 0.17) 0px 12px 13px, rgba(0, 0, 0, 0.09) 0px -3px 5px;
+    padding: 70px;
+    border-radius:20px ;
+    transition: 0.4s;
+    animation: spin 1s   ;
+
+    
+}
+.profilecard:hover{
+    transition: 0.4s;
+transform: rotate(-2deg) scale(1.04);
+
+
+}
+.bot{
+    margin-left: 70px;
+    /* animation-iteration-count: 3; */
+}
+.left .avatar{
+    width: 75px;
+    height: 75px;
+}
+
+.left img{
+    width: 100%;
+    height: 100%;
+    border-radius:50% ;
+}
+.top{
+
+display: flex;
+justify-content: space-between;
+
+
+
+
+}
+
+.top button{
+    width: 100px;
+    height: 30px;
+    
+}
+.bottom{
+    display: flex;
+    flex-direction: column;
+    gap: 45px;
+}
+.followers{
+    display: flex;
+    gap: 80px;
+}
+.cont{
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+@keyframes spin {
+    0%{
+    transform:rotate(0deg) scale(0);
+    }
+    100%{
+        transform: rotate(1440deg) scale(1);
+    }
+    
+}
+
+
+    </style>
+</head>
+
+    <div class="main">
+        <div class="heading">
+            <h1>Search Github Profile</h1>
+        </div>
+        <div class="box">
+            <div>
+            <input type="text" placeholder="Enter the github profile name" id="searchprofile">
+            
+        </div>
+        <div>
+            <button id="btn" style="width: 90px;">Search</button>
+            </div>
+
+        </div>
+  
+
+<div class="bot" id="card">
+       
+    </div>
+    <div class="loading" id="loading"></div>
+    </div>
+
+    <script >
+        const url="https://api.github.com/users";
+const searchinput = document.getElementById("searchprofile");
+const searchbtn  = document.getElementById("btn");
+const profile = document.getElementById("card");
+const load = document.getElementById("loading");
+
+const generateprofile=(profile1)=>{
+    
+    //yeh template literals isiliye aya kyunfki html css ka code ko as a string treate karenge it is not a jsx file
+    return`
+       
+    <div class="profilecard">
+    <div class="top">
+        <div class="left">
+            <div class="avatar">
+                <img src="${profile1.avatar_url}"alt=""/>
+            </div>
+            <div class="self">
+                <h1 style="font-size: 20px;">${profile1.name}</h1>
+                <h1 style="font-size: 15px;">@${profile1.login}</h1>
+            </div>
+            
+        </div>
+        <a href="${profile1.html_url}" target="/"> <button style="margin-top: 30px;">Check Profile</button></a>       
+    </div>
+    <div class="bottom">
+    <div class="about">
+        <h2>About</h2>
+       <br/>
+        <p>${profile1.bio}</p>
+    </div>
+    <div class="followers">
+        <div class="cont">
+        <h3>Followers</h3>
+        <p>${profile1.followers}</p>
+    </div>
+    <div class="cont">
+
+        <h3>Followings</h3>
+        <p>${profile1.following}</p>
+    </div>
+    <div class="cont">
+        <h3>Repos</h3>
+        <p>${profile1.public_repos}</p>
+    </div>
+    </div>
+    </div>
+</div>
+
+`
+    
+ 
+};
+const fetchprofile  =async()=>{
+    const username = searchinput.value;
+    load.innerText = "Loading......";
+    load.style.color = "green";
+    try {
+
+        const resp = await fetch(`${url}/${username}`);
+        const data =await resp.json();
+        console.log("data",data)    ;
+
+        if(data.login){
+            load.innerText ="";
+            profile.innerHTML=generateprofile(data);
+        }else{
+            load.innerHTML=data.message;
+            load.style.color = "red";
+        }
+
+    } catch (error) {
+    console.log({error});
+        
+    }
+
+
+
+};
+
+
+
+searchbtn.addEventListener("click",fetchprofile);
+
+
+    </script>
+    
+</body>
+</html>
